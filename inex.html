@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDF - Controle de Veículos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilo para um visual mais limpo e focado */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .screen {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        /* Efeito de carregamento */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3b82f6;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div id="app" class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
+
+        <!-- ===== TELA DE LOGIN ===== -->
+        <div id="login-screen" class="screen active p-6">
+            <div class="text-center mb-10">
+                <img src="https://placehold.co/200x80/003366/FFFFFF?text=GDF" alt="Logo GDF" class="mx-auto mb-4 rounded">
+                <h1 class="text-2xl font-bold text-gray-700">Controle de Veículos</h1>
+                <p class="text-gray-500">Acesso do Condutor</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="matricula" class="block text-sm font-medium text-gray-600">Matrícula</label>
+                    <input type="text" id="matricula" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Sua matrícula">
+                </div>
+                <div>
+                    <label for="senha" class="block text-sm font-medium text-gray-600">Senha</label>
+                    <input type="password" id="senha" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="********">
+                </div>
+                <button id="login-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">
+                    Entrar
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== TELA DE SELEÇÃO DE VEÍCULO ===== -->
+        <div id="vehicle-screen" class="screen p-6">
+            <h1 class="text-2xl font-bold text-gray-700 mb-4">Selecionar Veículo</h1>
+            <p class="text-gray-500 mb-6">Escolha o veículo que irá conduzir hoje.</p>
+            <div id="vehicle-list" class="space-y-3">
+                <!-- Veículos serão inseridos aqui pelo JS -->
+            </div>
+             <button id="confirm-vehicle-btn" class="mt-6 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300" disabled>
+                Confirmar Veículo
+            </button>
+        </div>
+
+        <!-- ===== TELA DE CHECKLIST ===== -->
+        <div id="checklist-screen" class="screen p-6">
+            <h1 class="text-2xl font-bold text-gray-700 mb-2">Checklist Pré-Viagem</h1>
+            <p id="checklist-vehicle-info" class="text-gray-500 mb-6"></p>
+            <div class="space-y-4">
+                <!-- Nível de Combustível -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-2">Nível de Combustível</label>
+                    <div class="flex justify-around bg-gray-100 p-1 rounded-lg">
+                        <button class="checklist-option flex-1 py-2 rounded-md" data-group="fuel">1/4</button>
+                        <button class="checklist-option flex-1 py-2 rounded-md" data-group="fuel">1/2</button>
+                        <button class="checklist-option flex-1 py-2 rounded-md" data-group="fuel">3/4</button>
+                        <button class="checklist-option flex-1 py-2 rounded-md" data-group="fuel">Cheio</button>
+                    </div>
+                </div>
+                <!-- Itens de verificação -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <span class="text-gray-700">Água do Motor OK?</span>
+                        <input type="checkbox" class="h-6 w-6 rounded text-blue-600 focus:ring-blue-500">
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <span class="text-gray-700">Óleo do Motor OK?</span>
+                        <input type="checkbox" class="h-6 w-6 rounded text-blue-600 focus:ring-blue-500">
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <span class="text-gray-700">Pneus OK?</span>
+                        <input type="checkbox" class="h-6 w-6 rounded text-blue-600 focus:ring-blue-500">
+                    </div>
+                     <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <span class="text-gray-700">Itens Obrigatórios OK?</span>
+                        <input type="checkbox" class="h-6 w-6 rounded text-blue-600 focus:ring-blue-500">
+                    </div>
+                </div>
+                <!-- Observações -->
+                <div>
+                    <label for="observacoes" class="block text-sm font-medium text-gray-600">Observações / Avarias</label>
+                    <textarea id="observacoes" rows="3" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Risco na porta direita"></textarea>
+                </div>
+                <!-- Foto -->
+                <div>
+                    <label for="foto" class="block text-sm font-medium text-gray-600">Anexar Foto (Opcional)</label>
+                    <input type="file" id="foto" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+            </div>
+            <button id="complete-checklist-btn" class="mt-6 w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300">
+                Concluir Vistoria e Iniciar Jornada
+            </button>
+        </div>
+
+        <!-- ===== TELA PRINCIPAL DA VIAGEM ===== -->
+        <div id="main-screen" class="screen">
+            <div class="bg-blue-600 text-white p-4 shadow-md">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm">Veículo em uso:</p>
+                        <p id="main-vehicle-info" class="font-bold text-lg"></p>
+                    </div>
+                    <button id="logout-btn" class="text-white hover:text-blue-200">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 text-center">
+                <div id="trip-status-container" class="bg-gray-100 p-6 rounded-lg mb-6">
+                    <p class="text-gray-500 text-lg mb-2">Status</p>
+                    <p id="trip-status" class="text-2xl font-bold text-gray-800">Aguardando início da viagem</p>
+                </div>
+
+                <div id="trip-info" class="text-left mb-6 space-y-2 hidden">
+                    <p><strong>Início:</strong> <span id="start-time">--:--</span></p>
+                    <p><strong>Local de Partida:</strong> <span id="start-location">Buscando...</span></p>
+                </div>
+                
+                <div id="loading-location" class="hidden flex-col items-center justify-center mb-4">
+                    <div class="loader"></div>
+                    <p class="text-gray-500 mt-2">Obtendo localização...</p>
+                </div>
+
+                <button id="start-trip-btn" class="w-full bg-green-500 text-white font-bold py-4 px-4 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 text-xl">
+                    <i class="fas fa-play-circle mr-2"></i> Iniciar Viagem
+                </button>
+                
+                <button id="end-trip-btn" class="w-full bg-red-500 text-white font-bold py-4 px-4 rounded-lg shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300 text-xl hidden">
+                    <i class="fas fa-stop-circle mr-2"></i> Finalizar Viagem
+                </button>
+            </div>
+            
+            <div class="px-6">
+                 <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-3">Histórico do Dia</h2>
+                 <div id="trip-history" class="space-y-3">
+                    <p class="text-gray-500 text-center">Nenhuma viagem registrada hoje.</p>
+                 </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos da UI
+            const screens = {
+                login: document.getElementById('login-screen'),
+                vehicle: document.getElementById('vehicle-screen'),
+                checklist: document.getElementById('checklist-screen'),
+                main: document.getElementById('main-screen'),
+            };
+
+            const buttons = {
+                login: document.getElementById('login-btn'),
+                confirmVehicle: document.getElementById('confirm-vehicle-btn'),
+                completeChecklist: document.getElementById('complete-checklist-btn'),
+                startTrip: document.getElementById('start-trip-btn'),
+                endTrip: document.getElementById('end-trip-btn'),
+                logout: document.getElementById('logout-btn'),
+            };
+
+            const displays = {
+                vehicleList: document.getElementById('vehicle-list'),
+                checklistVehicleInfo: document.getElementById('checklist-vehicle-info'),
+                mainVehicleInfo: document.getElementById('main-vehicle-info'),
+                tripStatus: document.getElementById('trip-status'),
+                tripInfo: document.getElementById('trip-info'),
+                startTime: document.getElementById('start-time'),
+                startLocation: document.getElementById('start-location'),
+                loadingLocation: document.getElementById('loading-location'),
+                tripHistory: document.getElementById('trip-history'),
+            };
+            
+            // Estado da aplicação
+            let state = {
+                currentScreen: 'login',
+                selectedVehicle: null,
+                lastOdometer: null,
+                tripHistory: [],
+            };
+
+            // Dados de exemplo
+            const mockVehicles = [
+                { id: 1, model: 'ÔNIX', plate: 'SGY-1J98' },
+                { id: 2, model: 'GOL', plate: 'PAO-2K45' },
+                { id: 3, model: 'KWID', plate: 'ABC-1234' },
+                { id: 4, model: 'RENEGADE', plate: 'XYZ-9876' },
+            ];
+
+            // Função para trocar de tela
+            function navigateTo(screenName) {
+                Object.values(screens).forEach(screen => screen.classList.remove('active'));
+                screens[screenName].classList.add('active');
+                state.currentScreen = screenName;
+            }
+            
+            // --- LÓGICA DE LOGIN ---
+            buttons.login.addEventListener('click', () => {
+                const matricula = document.getElementById('matricula').value;
+                if (!matricula) {
+                    alert('Por favor, insira sua matrícula.');
+                    return;
+                }
+                // Simulação de login bem-sucedido
+                populateVehicleList();
+                navigateTo('vehicle');
+            });
+            
+            // --- LÓGICA DE SELEÇÃO DE VEÍCULO ---
+            function populateVehicleList() {
+                displays.vehicleList.innerHTML = '';
+                mockVehicles.forEach(v =
